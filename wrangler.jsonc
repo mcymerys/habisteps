@@ -1,7 +1,7 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "10x-astro-starter",
-  "main": "@astrojs/cloudflare/entrypoints/server",
+  "main": "src/worker.ts",
   "compatibility_date": "2026-05-08",
   "compatibility_flags": ["nodejs_compat"],
   "assets": {
@@ -11,5 +11,11 @@
   },
   "observability": {
     "enabled": true,
+  },
+  "triggers": {
+    // Weekly Review generator. Runs Mondays at 06:00 UTC, off the request
+    // path — the edge runtime doesn't support long-running in-request jobs.
+    // See src/worker.ts (scheduled handler) and src/lib/jobs/weekly-review.ts.
+    "crons": ["0 6 * * 1"],
   },
 }
