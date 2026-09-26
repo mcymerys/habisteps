@@ -14,16 +14,19 @@
       "Bash(git stash *)",
       "Read",
       "Edit",
-      "Write"
+      "Write",
+      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); print\\(json.dumps\\(d.get\\('devDependencies',{}\\), indent=2\\)\\)\")",
+      "Bash(sed -n '/\"devDependencies\"/,/}/p' package.json)",
+      "Bash(git ls-remote *)"
+    ],
+    "deny": [
+      "Bash(rm -rf *)"
     ],
     "ask": [
       "Bash(curl *)",
       "Bash(wget *)",
       "Bash(git push *)",
       "Bash(git push)"
-    ],
-    "deny": [
-      "Bash(rm -rf *)"
     ]
   }
 }

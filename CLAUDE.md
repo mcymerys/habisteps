@@ -117,10 +117,21 @@ Full server-side rendering (`output: "server"` in astro.config.mjs). All pages a
 #### Environment
 
 - Node.js v22.14.0 (see `.nvmrc`)
-- Env vars: `SUPABASE_URL`, `SUPABASE_KEY` (copy `.env.example` to `.env` for Node, or `.dev.vars` for Cloudflare local dev)
+- Env vars: `SUPABASE_URL`, `SUPABASE_KEY`, `SUPABASE_SERVICE_ROLE_KEY` (copy `.env.example` to `.env` for Node, or `.dev.vars` for Cloudflare local dev)
 - Local Supabase: `npx supabase start` (requires Docker)
 - Cloudflare local dev: secrets go in `.dev.vars` (gitignored)
 - Deploy: `npx wrangler deploy` (requires Cloudflare account + `wrangler` auth)
+
+#### Background jobs (Cron Triggers)
+
+Cloudflare's edge runtime doesn't support long-running in-request jobs, so scheduled work (the weekly Review generator) runs via a Cloudflare Workers **Cron Trigger** instead of an in-request handler:
+
+- `wrangler.jsonc` `main` points at `src/worker.ts` (not the adapter's default entrypoint) and declares `triggers.crons`.
+- `src/worker.ts` spreads Astro's own Cloudflare `fetch` handler and adds a `scheduled` export, which calls into the job.
+- `src/lib/jobs/weekly-review.ts` holds the job body. It currently only validates env and logs — the actual goal/streak/XP generation logic is a TODO pending that data model.
+- The job needs `SUPABASE_SERVICE_ROLE_KEY` (bypasses RLS) since it runs with no user/cookie context; never expose that key client-side.
+- Test locally with `npx wrangler dev --test-scheduled`, then trigger the cron with `curl "http://localhost:8787/__scheduled?cron=0+6+*+*+1"`.
+- Adding a new scheduled job: add its logic under `src/lib/jobs/`, call it from `src/worker.ts`'s `scheduled` handler (via `ctx.waitUntil(...)` so the Worker doesn't exit early), and add/adjust the cron expression in `wrangler.jsonc`.
 
 ### CI
 
