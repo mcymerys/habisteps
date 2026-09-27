@@ -16,6 +16,87 @@ Uwaga: w `tech-stack.md` jest `deployment_target: cloudflare-pages`, ale projekt
 
 Weryfikacja w kodzie: `@astrojs/cloudflare` wywołuje `setGetEnv(createGetEnv(env z "cloudflare:workers"))` na poziomie modułu (`node_modules/@astrojs/cloudflare/dist/utils/handler.js:31`). Dzięki temu `astro:env/server` działa także w handlerze `scheduled`, a sekrety z `wrangler secret` trafią do joba weekly-review.
 
+## Krok 0: prerekwizyty (konta + konfiguracja CLI)
+
+Stan maszyny sprawdzony 2026-09-27: Node v26.10.0, npm 11.19.1, Wrangler 4.131.1, Supabase CLI 2.117.0, gh 2.101.0, Docker 29.8.0, git 2.55. Menedżer wersji Node (nvm/fnm/volta) nie został wykryty.
+
+### 0.1 Konta
+
+| Konto                                  | Po co                            | Plan                                                    |
+| -------------------------------------- | -------------------------------- | ------------------------------------------------------- |
+| Cloudflare (dash.cloudflare.com)       | hosting Workera, sekrety, cron   | Free (Paid $5/mies. dopiero przed logiką weekly-review) |
+| Supabase (supabase.com)                | baza Postgres + Auth             | Free                                                    |
+| GitHub, dostęp do `mcymerys/habisteps` | PR, sekrety Actions, auto-deploy | —                                                       |
+
+### 0.2 Node w wersji z `.nvmrc` (zalecane, nieblokujące)
+
+Projekt deklaruje Node **22.14.0** (`.nvmrc`), a CI też używa 22. Lokalnie jest v26: build najpewniej przejdzie, ale jeśli lokalnie jest inna wersja niż w CI, błąd „u mnie działa, w CI nie” będzie trudny do zdiagnozowania. Zalecenie: **fnm** (Fast Node Manager), bo na Windows działa w PowerShell i Git Bash i sam czyta `.nvmrc`:
+
+```powershell
+winget install Schniz.fnm
+# dodaj do profilu PowerShell ($PROFILE):  fnm env --use-on-cd | Out-String | Invoke-Expression
+fnm install        # w katalogu projektu: instaluje wersję z .nvmrc
+fnm use
+node -v            # → v22.14.0
+```
+
+Alternatywa: nvm-windows (`winget install CoreyButler.NVMforWindows`, potem `nvm install 22.14.0` i `nvm use 22.14.0`). Po zmianie wersji Node uruchom `npm ci`, żeby natywne binarki (workerd, esbuild) pasowały do nowej wersji.
+
+### 0.3 Zależności projektu = CLI Wranglera i Supabase
+
+`wrangler` i `supabase` są w `devDependencies` (`package.json`), więc **nie instalujemy ich globalnie**. Uruchamiamy je zawsze przez `npx wrangler …` / `npx supabase …`. Dlaczego: wersję przypina `package-lock.json`, więc lokalnie i w CI działa dokładnie ta sama wersja CLI, a globalna instalacja rozjechałaby się z czasem.
+
+```bash
+npm ci                     # instaluje dokładnie to, co w package-lock.json
+npx wrangler --version     # → 4.131.x
+npx supabase --version     # → 2.117.x
+```
+
+### 0.4 Wrangler (Cloudflare): logowanie
+
+```bash
+npx wrangler login         # otwiera przeglądarkę → „Allow” → token OAuth zapisany lokalnie
+npx wrangler whoami        # pokazuje e-mail, nazwę konta i Account ID
+```
+
+- Jeśli przeglądarka nie wraca do terminala (callback na `localhost:8976` blokuje firewall/VPN), użyj `npx wrangler login --device`: dostajesz kod do wpisania na stronie Cloudflare, bez callbacku na localhost.
+- **Account ID** z `whoami` zapisz; przyda się jako sekret `CLOUDFLARE_ACCOUNT_ID` w GitHub (Krok 6). Przy kilku kontach Wrangler przy deployu zapyta, na które wdrażać.
+- **Subdomena workers.dev:** na nowym koncie pierwszy `wrangler deploy` zapyta o rejestrację subdomeny (`<nazwa>.workers.dev`). Wybierz ją świadomie, bo stanie się częścią publicznego URL-a `habistep.<nazwa>.workers.dev`. Można ją też ustawić wcześniej w dashboardzie: Workers & Pages → Account details → Subdomain.
+- Token OAuth z `wrangler login` daje pełny dostęp do konta. Jest tylko na Twoją maszynę. CI dostanie osobny, wąski API token (Krok 6).
+
+### 0.5 Supabase CLI: logowanie
+
+```bash
+npx supabase login              # przeglądarka → generuje personal access token i zapisuje go lokalnie
+npx supabase projects list      # weryfikacja: lista projektów (po Kroku 1b pojawi się habistep)
+```
+
+- `supabase login` jest potrzebny do `supabase link` i `supabase db push` (Krok 1b.4). Sama aplikacja go nie używa; runtime korzysta z kluczy API.
+- `link` zapisuje referencję projektu w `supabase/.temp/`, który jest już w `supabase/.gitignore`.
+- **Docker** jest potrzebny tylko do lokalnego `npx supabase start` (dev i job `smoke` w CI) oraz do `db diff`/`db pull`. Wdrożenie i `db push` go nie wymagają.
+
+### 0.6 GitHub CLI: logowanie
+
+```bash
+gh auth login              # GitHub.com → protokół SSH (remote repo to git@github.com:…) → Login with a web browser
+gh auth status             # weryfikacja
+gh secret list             # czy są SUPABASE_URL / SUPABASE_KEY dla joba `ci`
+```
+
+`gh` posłuży do ustawienia sekretów Actions (`gh secret set NAZWA`, który pyta o wartość interaktywnie, więc nie trafia ona do historii shella) i do utworzenia PR-a. Jeśli nie chcesz logować `gh`, to samo zrobisz w przeglądarce: repo → Settings → Secrets and variables → Actions.
+
+### 0.7 Checklista gotowości
+
+| Sprawdzenie                  | Oczekiwany wynik                                   |
+| ---------------------------- | -------------------------------------------------- |
+| `node -v`                    | `v22.14.0` (zalecane)                              |
+| `npx wrangler whoami`        | Twój e-mail + Account ID                           |
+| `npx supabase projects list` | tabela projektów (może być pusta przed Krokiem 1b) |
+| `gh auth status`             | `Logged in to github.com`                          |
+| `git status`                 | branch `deploy/first-deployment`                   |
+
+W Claude Code interaktywne logowania uruchamiasz z prefiksem `!` (np. `! npx wrangler login`), żeby wynik trafił do rozmowy.
+
 ## Krok 1: zmiana w kodzie przed pierwszym deployem
 
 `wrangler.jsonc`: `"name": "10x-astro-starter"` → `"name": "habistep"`.
@@ -39,9 +120,9 @@ Dlaczego dashboard, a nie `supabase projects create` z CLI: to jednorazowa opera
    - Wartości wklejasz **tylko** do `.env.production` (Krok 3), nie do czatu.
 4. Podpięcie repo do projektu (dla przyszłych migracji): `! npx supabase login` (przeglądarka), potem ja uruchamiam `npx supabase link --project-ref <ref>` (poprosi o hasło bazy, więc to wpisujesz Ty). Migracji jeszcze nie ma, więc na razie nic nie pushujemy. `link` przygotowuje grunt pod `npx supabase db push`, gdy pojawią się tabele goals/streaks/XP.
 
-## Krok 2: logowanie (użytkownik, interaktywnie)
+## Krok 2: logowanie do Cloudflare
 
-- `! npx wrangler login` otwiera przeglądarkę z OAuth. Potem sprawdzam `npx wrangler whoami`. Jeśli kont jest kilka, zapisuję `account_id`.
+- Wykonane w ramach Kroku 0.4 (`npx wrangler login` + `npx wrangler whoami`). Tutaj tylko potwierdzam, że `whoami` pokazuje właściwe konto, zanim zrobimy pierwszy deploy.
 
 ## Krok 3: sekrety produkcyjne bez pokazywania ich w czacie
 
@@ -119,9 +200,10 @@ deploy:
 
 Branch: `deploy/first-deployment`
 
+- [ ] Krok 0: prerekwizyty (Node 22, `wrangler login`, `supabase login`, `gh auth login`)
 - [ ] Krok 1: `wrangler.jsonc` → `"name": "habistep"`
 - [ ] Krok 1b: nowy projekt Supabase + `supabase link`
-- [ ] Krok 2: `wrangler login`
+- [ ] Krok 2: potwierdzenie konta Cloudflare (`wrangler whoami`)
 - [ ] Krok 3: pierwszy `wrangler deploy` + `wrangler secret bulk .env.production`
 - [ ] Krok 4: Site URL / Redirect URLs w Supabase Auth
 - [ ] Krok 5: weryfikacja ręcznego wdrożenia
