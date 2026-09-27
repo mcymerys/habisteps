@@ -56,10 +56,11 @@ Cloudflare's edge runtime doesn't support long-running in-request jobs, so sched
 
 ### CI
 
-GitHub Actions workflow (`.github/workflows/ci.yml`) runs two jobs on every push and PR to master:
+GitHub Actions workflow (`.github/workflows/ci.yml`) runs three jobs:
 
-- **ci** — lint, `astro check`, and build. Requires `SUPABASE_URL` and `SUPABASE_KEY` repository secrets for the build step.
-- **smoke** — starts a local Supabase via the Supabase CLI, builds, serves the production preview on the Cloudflare runtime, and runs `npm run smoke` against it. No secrets required.
+- **ci** (every push and PR to master) — lint, `astro check`, and build. Requires `SUPABASE_URL` and `SUPABASE_KEY` repository secrets for the build step.
+- **smoke** (every push and PR to master) — starts a local Supabase via the Supabase CLI, builds, serves the production preview on the Cloudflare runtime, and runs `npm run smoke` against it. No secrets required.
+- **deploy** (push to master only, after `ci` and `smoke` pass) — builds and deploys the Worker via `cloudflare/wrangler-action`. Requires `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` repository secrets. Skipped on pull requests; `concurrency: production` prevents overlapping deploys.
 
 <!-- BEGIN @przeprogramowani/10x-cli -->
 
