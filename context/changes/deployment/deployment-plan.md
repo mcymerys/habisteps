@@ -200,13 +200,13 @@ deploy:
 
 Branch: `deploy/first-deployment`
 
-- [ ] Krok 0: prerekwizyty (Node 22, `wrangler login`, `supabase login`, `gh auth login`)
-- [ ] Krok 1: `wrangler.jsonc` → `"name": "habistep"`
-- [ ] Krok 1b: nowy projekt Supabase + `supabase link`
-- [ ] Krok 2: potwierdzenie konta Cloudflare (`wrangler whoami`)
-- [ ] Krok 3: pierwszy `wrangler deploy` + `wrangler secret bulk .env.production`
-- [ ] Krok 4: Site URL / Redirect URLs w Supabase Auth
-- [ ] Krok 5: weryfikacja ręcznego wdrożenia
-- [ ] Krok 6: job `deploy` w `.github/workflows/ci.yml` (kod gotowy; brak sekretów `CLOUDFLARE_API_TOKEN` / `CLOUDFLARE_ACCOUNT_ID` w GitHub)
-- [ ] Krok 7: dokumentacja (`README.md`, `CLAUDE.md`)
-- [ ] Krok 8: commit, PR, merge, weryfikacja auto-deployu
+- [x] Krok 0: prerekwizyty (Node pozostał v26.10.0 — świadoma decyzja, plan zalecał 22.14.0 ale nieblokująco; `wrangler login`, `supabase login`, `gh auth login` gotowe)
+- [x] Krok 1: `wrangler.jsonc` → `"name": "habistep"` (przy okazji też `package.json`, którego stara nazwa `10x-astro-starter` blokowała auto-rejestrację subdomeny workers.dev)
+- [x] Krok 1b: nowy projekt Supabase + `supabase link` (region: eu-west-1/Irlandia — świadome odstępstwo od rekomendowanego Frankfurtu, projekt już istniał w tym regionie)
+- [x] Krok 2: potwierdzenie konta Cloudflare (`wrangler whoami`)
+- [x] Krok 3: pierwszy `wrangler deploy` + `wrangler secret bulk .env.production` (Worker: `https://habistep.cymek.workers.dev`)
+- [x] Krok 4: Site URL / Redirect URLs w Supabase Auth
+- [x] Krok 5: weryfikacja ręcznego wdrożenia (`/` 200, `/dashboard` 302, pełny signup→confirm→signin→dashboard→signout ręcznie w przeglądarce, cron `0 6 * * 1` potwierdzony)
+- [x] Krok 6: job `deploy` w `.github/workflows/ci.yml`, sekrety `CLOUDFLARE_API_TOKEN` / `CLOUDFLARE_ACCOUNT_ID` ustawione w GitHub. Dodatkowo wykryto i wyłączono natywną integrację Cloudflare Workers Builds, która deployowałaby równolegle do tego samego Workera
+- [x] Krok 7: dokumentacja (`README.md`, `CLAUDE.md`)
+- [x] Krok 8: commit, PR #2, merge do `master`, auto-deploy w CI zweryfikowany (job `deploy` przeszedł, `wrangler deployments list` pokazuje nową wersję z CI)
