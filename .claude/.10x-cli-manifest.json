@@ -2,8 +2,8 @@
   "package": "@przeprogramowani/10x-cli",
   "version": "1.21.0",
   "manifestVersion": 3,
-  "lastApplied": "2026-09-27T08:02:25.059Z",
-  "lessonId": "m1l5",
+  "lastApplied": "2026-09-29T17:56:15.716Z",
+  "lessonId": "m2l1",
   "course": "10xdevs4",
   "tool": "claude-code",
   "files": {
@@ -154,6 +154,16 @@
         "contentHashes": {
           "SKILL.md": "a9d8777dd0ead9a7473524c2d29a64f5754032628e44b4b899cb18299ef1ad1b",
           "references/agent-friendly-criteria.md": "888b4b712107bf8d8600061e1d907bb1bc14081cb2c3a74be8c7da641a35ab72"
+        }
+      },
+      "10x-roadmap": {
+        "files": [
+          "SKILL.md",
+          "references/milestone-state.md"
+        ],
+        "contentHashes": {
+          "SKILL.md": "1a0ee338798e6168d70dfb02261dda562af1fe0c58bd6dffffd1745d74a3804b",
+          "references/milestone-state.md": "d9446372acbab5617de079c5ee1e1d4a17fb3329e7bcc1a0129d3ee894fe0a2b"
         }
       }
     },
@@ -539,6 +549,19 @@
         "m1l5-3-extend-prerequisites.md",
         "m1l5-4-store-plan.md"
       ],
+      "configs": []
+    },
+    "m2l1": {
+      "appliedAt": "2026-09-29T17:56:15.716Z",
+      "skills": {
+        "10x-roadmap": {
+          "files": [
+            "SKILL.md",
+            "references/milestone-state.md"
+          ]
+        }
+      },
+      "prompts": [],
       "configs": []
     }
   },
