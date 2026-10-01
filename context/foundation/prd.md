@@ -1,6 +1,6 @@
 ---
 project: Habistep
-version: 1
+version: 2
 status: draft
 created: 2026-09-26
 context_type: greenfield
@@ -59,7 +59,7 @@ Pain dimensions this product addresses:
 ### US-01: Create and view a new goal
 
 - **Given** the user is logged in and viewing the home page with no goals listed
-- **When** the user clicks "Add goal" and fills the multi-step form (name "Exercise", deadline "Tomorrow", end condition target "1 hour" / minimum "30 minutes", frequency target "5x/week" / minimum "2x/week", category "Fitness", priority "High") and submits it
+- **When** the user clicks "Add goal" and fills the multi-step form (name "Exercise", no deadline since it is a recurring goal, end condition target "1 hour" / minimum "30 minutes", flexible frequency target "5x/week" / minimum "2x/week", category "Fitness", priority "High") and submits it
 - **Then** the goal appears in the home page list, the user is taken to the goal detail page, sees a progress bar (0% initially) and a streak counter (0 days), and can mark the goal done for today
 
 ### US-02: Login with email and password
@@ -78,7 +78,7 @@ Pain dimensions this product addresses:
 
 - **Given** the user is viewing a goal detail page (e.g., "Exercise" — target 1h, minimum 30min, 5x/week target / 2x/week minimum)
 - **When** the user selects one of: Done, Not done, Done less, Done more
-- **Then** the streak updates accordingly (meeting the minimum keeps the streak alive; falling short of the minimum breaks it), the user earns XP for a logged "Done" with a bonus for meeting the full target, and the goal status reflects the selection
+- **Then** the streak updates accordingly ("Done less", "Done" and "Done more" all meet the minimum and keep the streak alive; a period that ends below the minimum breaks it), the user earns XP by option ("Done less" 5 XP; "Done" 10 XP; "Done more" 15 XP; "Not done" 0 XP), and the goal status reflects the selection
 
 ### US-05: Edit existing goal
 
@@ -129,13 +129,13 @@ Pain dimensions this product addresses:
 - FR-003: User can view all goals sorted by when they need to be executed (by deadline/frequency); if all today's goals are completed, show a motivational message ("That's all for today, you're on track"); a "Show more" control reveals goals for other days. Priority: must-have
   > Socrates: Counter-argument considered: "Show only today's goals might hide important tasks." Resolution: kept, with "Show more" toggle for other days.
 
-- FR-004: User can add a new goal through a multi-step form (Step 1: name, Step 2: deadline, Step 3: end condition — target and minimum, Step 4: frequency — target and minimum, Step 5: category, Step 6: priority). The category step offers a fixed list: Fitness, Health, Learning, Work/Productivity, Relationships, Finance, Other. Priority: must-have
+- FR-004: User can add a new goal through a multi-step form (Step 1: name, Step 2: deadline — only for non-recurring goals; recurring goals have no deadline, Step 3: end condition — target and minimum, Step 4: frequency — either flexible (target and minimum times per week, e.g. 5x/2x) or fixed weekdays (e.g. Mon/Wed/Fri), Step 5: category, Step 6: priority). The category step offers a fixed list: Fitness, Health, Learning, Work/Productivity, Relationships, Finance, Other. Priority: must-have
   > Socrates: Counter-argument considered: "Multi-step form might cause drop-off at step 2." Resolution: kept; user accepted the flow.
 
 - FR-005: User can view a goal's detail page with streak count and text-based progress. Priority: must-have
   > Socrates: Counter-argument considered: "Visual progress bar takes effort; text is enough." Resolution: text-based only on MVP; visual bar in v2.
 
-- FR-006: User can mark a goal as: Done, Not done, Done less (partial), Done more (exceeded). Priority: must-have
+- FR-006: User can mark a goal as: Done (full target met), Not done (minimum not met), Done less (minimum met, target not met), Done more (target exceeded). Priority: must-have
   > Socrates: Counter-argument considered: "Four options are complex; binary (Done/Not done) is simpler." Resolution: kept; four options provide the nuance needed for adaptive feedback.
 
 - FR-007: App validates goal SMART criteria and warns if unrealistic: when the target frequency exceeds 7x/week (physically impossible for a once-daily habit), or when the target end-condition/frequency value is more than 3x the minimum value. Priority: must-have
@@ -163,10 +163,10 @@ Pain dimensions this product addresses:
 
 ### Gamification
 
-- FR-016: User earns 5 XP for each "Done" logged for a goal. Priority: must-have
+- FR-016: User earns a fixed amount of XP per logged option, not cumulative: "Done less" 5 XP, "Done" 10 XP, "Done more" 15 XP, "Not done" 0 XP. Priority: must-have
   > Socrates: Counter-argument considered: "Fixed XP regardless of goal difficulty could be trivially farmed with easy goals." Resolution: kept; farming isn't a real risk in a single-user MVP with no cross-user ranking.
 
-- FR-017: User earns a +10 XP bonus for meeting the full target (not just minimum) on a given day, and a +50 XP bonus for a perfect week. Priority: must-have
+- FR-017: User earns a +50 XP bonus for a perfect week (the full target met every required instance of the week). Meeting the target on a single day has no separate bonus — it is already reflected in the per-option XP of FR-016. Priority: must-have
   > Socrates: No separate challenge; addressed together with FR-016.
 
 - FR-018: Accumulated XP unlocks levels; each level increases the number of active goal slots available. The threshold to reach level 2 (the first level-up), L2, equals the total XP a user earns by completing one perfect week for a goal (every required "Done" at full target for that week, plus the perfect-week bonus). The threshold to reach level n (n ≥ 2) is L2 × (n-1)². Priority: must-have
@@ -215,9 +215,15 @@ Pain dimensions this product addresses:
 
 **Core rule**: The app teaches the user to set realistic goals by distinguishing a target from a minimum and validating against SMART criteria, makes progress visible through gamification (streaks sustained by the minimum, XP and bonuses for meeting the target or a perfect week, levels, badges), limits how many habits can be tracked at once (a slot count that grows with level, with priority-based queueing beyond that limit) so the user doesn't abandon everything at once, and every week evaluates actual performance and proposes — never forces — a change to a goal's difficulty; friends with visibility into public goals add a layer of social accountability.
 
-**Streak rule**: reaching the minimum (frequency and end condition) within the relevant period sustains the streak; reaching the full target additionally grants bonus XP, and — if true for every required day of the week — a "perfect week" badge.
+**Streak rule**: reaching the minimum (frequency and end condition) within the relevant period sustains the streak; reaching the full target earns more XP (see Completion options), and — if true for every required day of the week — a "perfect week" badge. The tracking week runs Monday–Sunday. A goal uses one of two scheduling modes:
+- *Flexible* (N times per week): the streak is not broken while the week's minimum can still be met; it resets only at the end of a week in which the minimum was not reached (e.g. for "2x/week" minimum, fewer than 2 completions by Sunday).
+- *Fixed weekdays*: the streak breaks as soon as a scheduled day passes without at least the minimum end condition.
 
-**Leveling rule**: XP accumulates from every logged "Done" (5 XP) plus a +10 XP bonus for meeting the full target that day and a +50 XP bonus for a perfect week; crossing an XP threshold raises the level, which increases the active goal slot limit by one — the next queued goal (by priority) becomes active automatically. The threshold to reach level 2 (L2) equals the total XP earned by completing one perfect week for a goal; the threshold to reach level n (n ≥ 2) is L2 × (n-1)² — a quadratic curve, so each level costs progressively more XP than the last, while the growing slot limit keeps pace by giving the user more goals to earn XP from.
+**One-off goals**: a one-off goal is the only kind of goal with a deadline; it keeps the frequency step (flexible or fixed weekdays) and has a streak under the same rules while it is in progress. Once the goal is fully completed it stops counting toward the streak — the streak is frozen (it neither grows nor breaks) and the goal no longer appears in the Weekly Review.
+
+**Completion options**: "Done less" = minimum met, target not met (streak kept, 5 XP); "Done" = target met (streak kept, 10 XP); "Done more" = target exceeded (streak kept, 15 XP; counts as above target for the weekly raise suggestion); "Not done" = minimum not met (0 XP). Amounts are fixed per option, not added together.
+
+**Leveling rule**: XP accumulates from every logged completion ("Done less" 5 XP, "Done" 10 XP, "Done more" 15 XP) plus a +50 XP bonus for a perfect week; crossing an XP threshold raises the level, which increases the active goal slot limit by one — the next queued goal (by priority) becomes active automatically. The threshold to reach level 2 (L2) equals the total XP earned by completing one perfect week for a goal; the threshold to reach level n (n ≥ 2) is L2 × (n-1)² — a quadratic curve, so each level costs progressively more XP than the last, while the growing slot limit keeps pace by giving the user more goals to earn XP from.
 
 **Weekly evaluation rule**: at the end of each week, the app compares actual performance against each goal's target/minimum; a week below minimum generates a suggestion to lower the goal, 2 consecutive weeks above target generate a suggestion to raise it — the user must explicitly accept the suggestion, otherwise the goal is left unchanged.
 
@@ -242,4 +248,6 @@ Pain dimensions this product addresses:
 
 ## Open Questions
 
-No open questions remain — all gaps identified during PRD generation (XP amounts, level threshold curve, category list, SMART-validation thresholds, Weekly Review suggestion timing) were resolved with the user and are reflected in the sections above.
+All gaps identified during PRD generation (XP amounts, level threshold curve, category list, SMART-validation thresholds, Weekly Review suggestion timing) were resolved with the user and are reflected in the sections above. v2 (2026-09-29) added the scheduling modes, the Monday–Sunday week, the no-deadline rule for recurring goals and the completion-option XP mapping.
+
+1. **What happens when a one-off goal's deadline passes before it is completed?** (Behaviour while in progress and after completion is settled — see Business Logic, One-off goals.) — Owner: user. Blocks: nothing yet (resolve while planning goal creation).
