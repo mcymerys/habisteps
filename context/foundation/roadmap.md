@@ -3,7 +3,7 @@ project: Habistep
 version: 1
 status: draft
 created: 2026-09-29
-updated: 2026-09-29
+updated: 2026-10-01
 prd_version: 2
 main_goal: speed
 top_blocker: time
@@ -40,7 +40,7 @@ People building habits set goals that are too ambitious, try to change everythin
 | ID   | Change ID                | Outcome (user can …)                                                              | Prerequisites | PRD refs                                      | Status   |
 | ---- | ------------------------ | --------------------------------------------------------------------------------- | ------------- | --------------------------------------------- | -------- |
 | F-01 | domain-rule-checks       | (foundation) automated checks for goal rules run locally and in CI                | —             | NFR-005, Business Logic                       | ready    |
-| S-01 | add-first-goal           | add a goal with target, minimum and a flexible or fixed-days schedule, and see it listed and on its detail page | —             | US-01, US-02, FR-001, FR-004, FR-005, FR-014, NFR-002 | ready    |
+| S-01 | add-first-goal           | add a goal with target, minimum and a flexible or fixed-days schedule, and see it listed and on its detail page | —             | US-01, US-02, FR-001, FR-004, FR-005, FR-014, NFR-002 | planning |
 | S-02 | log-daily-completion     | mark a goal Done / Not done / Done less / Done more and see streak and XP update  | S-01, F-01    | US-04, FR-005, FR-006, FR-016, FR-017         | proposed |
 | S-03 | weekly-review-screen     | open a Weekly Review of last week's outcome, streak and XP per goal               | S-02          | US-08, FR-019, NFR-003, NFR-006               | proposed |
 | S-04 | goal-scaling-suggestion  | accept or dismiss a suggestion to lower or raise a goal in the Weekly Review      | S-03          | US-08, FR-020                                 | proposed |
@@ -105,7 +105,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Unknowns:**
   - What happens when a one-off goal's deadline passes before it is completed? (PRD v2 Open Question 1; in-progress and completed behaviour is settled in PRD Business Logic, One-off goals) — Owner: user. Block: no.
 - **Risk:** First slice to create tables, so owner-only row-level security is set up here, not deferred; replaces the placeholder post-login landing.
-- **Status:** ready
+- **Status:** planning
 
 ### S-02: Log a day and see streak and XP
 
