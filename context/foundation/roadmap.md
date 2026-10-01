@@ -259,22 +259,22 @@ Foundations below assume these are present and do NOT re-scaffold them.
 
 ## Backlog Handoff
 
-| Roadmap ID | Change ID               | Suggested issue title                                         | Ready for `/10x-plan` | Notes                                          |
-| ---------- | ----------------------- | ------------------------------------------------------------- | --------------------- | ---------------------------------------------- |
-| F-01       | domain-rule-checks      | Add automated checks for goal rules to local runs and CI      | yes                   | Run `/10x-plan domain-rule-checks`             |
-| S-01       | add-first-goal          | Add a goal with target and minimum via multi-step form        | yes                   | Run `/10x-plan add-first-goal`                 |
-| S-02       | log-daily-completion    | Log daily completion with streak and XP                       | no                    | Needs S-01, F-01                               |
-| S-03       | weekly-review-screen    | Generate and show the Weekly Review every week                | no                    | Needs S-02                                     |
-| S-04       | goal-scaling-suggestion | Suggest lowering/raising a goal; accept or dismiss            | no                    | Needs S-03 (north star)                        |
-| S-05       | today-home-view         | Home page: today's goals, motivational message, "Show more"   | no                    | Needs S-02                                     |
-| S-06       | smart-goal-warnings     | SMART validation warnings in the add-goal form                | no                    | Needs S-01                                     |
-| S-07       | edit-goal               | Edit a goal while preserving its history                      | no                    | Needs S-01                                     |
-| S-08       | archive-goal            | Archive a goal without deleting its data                      | no                    | Needs S-01                                     |
-| S-09       | goal-slots-and-queue    | Limit active goals to 3 and queue the rest by priority        | no                    | Needs S-01, S-08                               |
-| S-10       | level-up-unlocks-slot   | Level up from XP to unlock an extra goal slot                 | no                    | Needs S-02, S-09                               |
-| S-11       | goal-badges             | Award perfect-week and 7/30/100-day streak badges             | no                    | Needs S-03                                     |
-| S-12       | invite-friend           | Invite a friend with a shareable link                         | yes                   | Run `/10x-plan invite-friend`                  |
-| S-13       | friends-public-goals    | Public/private goals visible read-only to friends             | no                    | Needs S-12, S-02                               |
+| Roadmap ID | Issue                                                    | Change ID               | Suggested issue title                                         | Ready for `/10x-plan` | Notes                                          |
+| ---------- | -------------------------------------------------------- | ----------------------- | ------------------------------------------------------------- | --------------------- | ---------------------------------------------- |
+| F-01       | [#3](https://github.com/mcymerys/habisteps/issues/3)     | domain-rule-checks      | Add automated checks for goal rules to local runs and CI      | yes                   | Run `/10x-plan domain-rule-checks`             |
+| S-01       | [#4](https://github.com/mcymerys/habisteps/issues/4)     | add-first-goal          | Add a goal with target and minimum via multi-step form        | yes                   | Run `/10x-plan add-first-goal`                 |
+| S-02       | [#5](https://github.com/mcymerys/habisteps/issues/5)     | log-daily-completion    | Log daily completion with streak and XP                       | no                    | Needs S-01, F-01                               |
+| S-03       | [#6](https://github.com/mcymerys/habisteps/issues/6)     | weekly-review-screen    | Generate and show the Weekly Review every week                | no                    | Needs S-02                                     |
+| S-04       | [#7](https://github.com/mcymerys/habisteps/issues/7)     | goal-scaling-suggestion | Suggest lowering/raising a goal; accept or dismiss            | no                    | Needs S-03 (north star)                        |
+| S-05       | [#8](https://github.com/mcymerys/habisteps/issues/8)     | today-home-view         | Home page: today's goals, motivational message, "Show more"   | no                    | Needs S-02                                     |
+| S-06       | [#9](https://github.com/mcymerys/habisteps/issues/9)     | smart-goal-warnings     | SMART validation warnings in the add-goal form                | no                    | Needs S-01                                     |
+| S-07       | [#10](https://github.com/mcymerys/habisteps/issues/10)   | edit-goal               | Edit a goal while preserving its history                      | no                    | Needs S-01                                     |
+| S-08       | [#11](https://github.com/mcymerys/habisteps/issues/11)   | archive-goal            | Archive a goal without deleting its data                      | no                    | Needs S-01                                     |
+| S-09       | [#12](https://github.com/mcymerys/habisteps/issues/12)   | goal-slots-and-queue    | Limit active goals to 3 and queue the rest by priority        | no                    | Needs S-01, S-08                               |
+| S-10       | [#13](https://github.com/mcymerys/habisteps/issues/13)   | level-up-unlocks-slot   | Level up from XP to unlock an extra goal slot                 | no                    | Needs S-02, S-09                               |
+| S-11       | [#14](https://github.com/mcymerys/habisteps/issues/14)   | goal-badges             | Award perfect-week and 7/30/100-day streak badges             | no                    | Needs S-03                                     |
+| S-12       | [#15](https://github.com/mcymerys/habisteps/issues/15)   | invite-friend           | Invite a friend with a shareable link                         | yes                   | Run `/10x-plan invite-friend`                  |
+| S-13       | [#16](https://github.com/mcymerys/habisteps/issues/16)   | friends-public-goals    | Public/private goals visible read-only to friends             | no                    | Needs S-12, S-02                               |
 
 This table is the clean handoff to Jira/Linear or any MCP-backed backlog. Include one row for every `F-NN` and `S-NN`. It should be compact enough to copy into issues, but it must not duplicate the detailed roadmap body.
 
