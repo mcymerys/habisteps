@@ -66,7 +66,7 @@ GitHub Actions workflow (`.github/workflows/ci.yml`) runs three jobs:
 
 ## 10xDevs AI Toolkit
 
-`/10x-*` agent-context chain reference (Task Router, skill capture rules, inclusion test): `@context/foundation/toolkit-guide.md`.
+`/10x-*` agent-context chain reference (Task Router, change-planning chain `/10x-new → /10x-plan → /10x-plan-review → /10x-implement`, skill capture rules, inclusion test): `@context/foundation/toolkit-guide.md`.
 
 Skills must not write to `context/archive/`. Archived changes are immutable; if a resolved target path starts with `context/archive/`, abort with: "This change is archived. Open a new change with `/10x-new` instead."
 

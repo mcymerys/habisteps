@@ -21,6 +21,34 @@ Reference for the `/10x-*` skill chain used to build and maintain this project. 
 | **Re-run upstream if needed** | |
 | `/10x-init` / `/10x-shape` / `/10x-prd` / `/10x-tech-stack-selector` / `/10x-bootstrapper` / `/10x-stack-assess` / `/10x-health-check` | Bundled so you can fix the PRD, swap the stack, or re-scaffold mid-flight. If `/10x-rule-review` flags a `FAIL` you can't shrink your way out of, or the infra anti-bias cross-check forces a platform swap that pushes a stack-shaped decision, re-run the upstream skill rather than patching downstream. |
 
+## Change-planning chain (Module 2, Lesson 2)
+
+Turns one roadmap item into the first implementation cycle:
+
+```
+/10x-roadmap -> /10x-new -> /10x-plan -> /10x-plan-review -> /10x-implement
+```
+
+`/10x-frame` and `/10x-research` are **not** required rituals here — they are escalation paths introduced in the next lesson.
+
+| Skill | Use it when |
+| --- | --- |
+| `/10x-new <change-id>` | A roadmap item is picked and you need a stable change folder. Creates `context/changes/<change-id>/change.md` so planning, implementation, progress, commits and later review share one identity. Use AFTER picking a roadmap item, BEFORE `/10x-plan`. |
+| `/10x-plan <change-id>` | You have a change folder and need a reviewable implementation plan. Reads roadmap context, foundation docs, codebase evidence and any existing change notes; writes `plan.md` and `plan-brief.md` with phases, file contracts, success criteria and `## Progress`. |
+| `/10x-plan-review <change-id>` | You have `plan.md` and want a lightweight readiness check before coding: catches missing end state, weak contracts, malformed progress, scope drift and blind spots. |
+| `/10x-implement <change-id> phase <n>` | You have an approved plan and want to execute one phase with verification, a manual gate, the commit ritual and the SHA recorded in `## Progress`. |
+| `/10x-archive <change-id>` | The change is merged or intentionally closed. Moves it from active `context/changes/` to archive. |
+
+How it hands off: `/10x-new` creates the durable change identity → `/10x-plan` turns it into an implementation contract → `/10x-plan-review` checks the plan before the agent touches code → `/10x-implement` runs one planned phase, verifies, asks for manual confirmation when needed, commits and records progress.
+
+Lesson boundaries:
+- Plan is the default router after picking a roadmap item. Start with `/10x-plan` unless the problem is unclear or blocked on external evidence.
+- Don't run `/10x-frame` + `/10x-research` as ceremony for every change.
+- Don't turn the lesson into a full end-to-end product build; a checkpoint with a planned and partly or fully implemented stream is valid.
+- Code review of the implemented diff belongs to Lesson 3 via `/10x-impl-review`.
+
+Paths used: `context/foundation/roadmap.md` (parent roadmap), `context/changes/<change-id>/change.md` (identity), `plan.md` (implementation contract), `plan-brief.md` (compressed handoff), `context/foundation/lessons.md` (recurring rules), `docs/reference/contract-surfaces.md` (registry of load-bearing names).
+
 ## How the chain hands off
 
 - `/10x-agents-md` writes (or surgically updates) `AGENTS.md` at the resolved scope. Repo-level scope = the file lives at the repo root and frames the project as a whole; directory-level scope = the file lives next to the code it governs and reframes around the local unit, dropping repo-wide framing entirely. The skill never silently overwrites — it switches to an update flow when the target exists.
