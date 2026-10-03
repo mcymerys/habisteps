@@ -86,6 +86,7 @@ Create the `goals` table with owner-only RLS, add zod, and define the shared goa
 - Index on `(user_id, priority, created_at)` for the dashboard query.
 - `create extension if not exists moddatetime schema extensions;` and a `before update` trigger `goals_set_updated_at` executing `extensions.moddatetime(updated_at)`, so `updated_at` is correct once S-07 adds editing.
 - `alter table public.goals enable row level security;` Policies for role `authenticated` only: `goals_select_own` (USING `(select auth.uid()) = user_id`), `goals_insert_own` (WITH CHECK same), `goals_update_own` (USING + WITH CHECK same). No `anon` policies and **no delete policy** (NFR-005: goals are archived, never hard-deleted). A header comment states both omissions are intentional.
+- *Addendum (impl review F2):* the migration also resets table grants — `revoke all ... from anon, authenticated`, then `grant select, insert, update ... to authenticated` — because Supabase grants every privilege on new `public` tables by default. This is intentional least-privilege hardening on top of RLS (so even a missing policy cannot expose DELETE or anon access); S-07 needs no new grant for editing.
 
 #### 2. zod dependency
 
@@ -343,54 +344,54 @@ First migration in the repository; there is no existing data. Applies locally vi
 
 #### Automated
 
-- [ ] 1.1 Migration applies cleanly on a fresh local database: `npx supabase db reset`
-- [ ] 1.2 Linting passes: `npm run lint`
-- [ ] 1.3 Type checking passes: `npx astro check`
+- [x] 1.1 Migration applies cleanly on a fresh local database: `npx supabase db reset` — 3cbe623
+- [x] 1.2 Linting passes: `npm run lint` — 3cbe623
+- [x] 1.3 Type checking passes: `npx astro check` — 3cbe623
 
 #### Manual
 
-- [ ] 1.4 In Supabase Studio, `public.goals` shows RLS enabled with exactly three policies (select/insert/update, role `authenticated`) and no delete policy
-- [ ] 1.5 In the SQL editor, inserting a recurring goal with a deadline, and a flexible goal with `freq_minimum > freq_target`, are both rejected by named CHECK constraints
+- [x] 1.4 In Supabase Studio, `public.goals` shows RLS enabled with exactly three policies (select/insert/update, role `authenticated`) and no delete policy — 3cbe623
+- [x] 1.5 In the SQL editor, inserting a recurring goal with a deadline, and a flexible goal with `freq_minimum > freq_target`, are both rejected by named CHECK constraints — 3cbe623
 
 ### Phase 2: Goal service, API endpoint and routing
 
 #### Automated
 
-- [ ] 2.1 Linting passes: `npm run lint`
-- [ ] 2.2 Type checking passes: `npx astro check`
-- [ ] 2.3 Build passes: `npm run build`
+- [x] 2.1 Linting passes: `npm run lint` — 4e7af36
+- [x] 2.2 Type checking passes: `npx astro check` — 4e7af36
+- [x] 2.3 Build passes: `npm run build` — 4e7af36
 
 #### Manual
 
-- [ ] 2.4 With `npm run dev`, signing in redirects to `/dashboard`
-- [ ] 2.5 Signed out, POST `/api/goals` returns 401 JSON
-- [ ] 2.6 Signed in, a valid payload returns 201 and the row has the correct `user_id`; schedule minimum > target returns 400 with a `schedule.minimum` field error
+- [x] 2.4 With `npm run dev`, signing in redirects to `/dashboard` — 4e7af36
+- [x] 2.5 Signed out, POST `/api/goals` returns 401 JSON — 4e7af36
+- [x] 2.6 Signed in, a valid payload returns 201 and the row has the correct `user_id`; schedule minimum > target returns 400 with a `schedule.minimum` field error — 4e7af36
 
 ### Phase 3: Goal list, multi-step form and detail page
 
 #### Automated
 
-- [ ] 3.1 Linting passes: `npm run lint`
-- [ ] 3.2 Type checking passes: `npx astro check`
-- [ ] 3.3 Build passes: `npm run build`
+- [x] 3.1 Linting passes: `npm run lint` — ce9ec61
+- [x] 3.2 Type checking passes: `npx astro check` — ce9ec61
+- [x] 3.3 Build passes: `npm run build` — ce9ec61
 
 #### Manual
 
-- [ ] 3.4 US-01 walk-through lands on the detail page with `Streak: 0 days` and `This week: 0 / 5 (minimum 2)`, and the goal is listed on `/dashboard`
-- [ ] 3.5 One-off fixed-days goal shows deadline and scheduled-days progress; goal without end condition shows no end-condition line
-- [ ] 3.6 "Next" blocks each invalid input with an inline error; "Back" preserves values
-- [ ] 3.7 Priority-1 goal is listed before a lower-priority goal on `/dashboard`
-- [ ] 3.8 `/goals/not-a-uuid` and a random valid UUID return 404 "Goal not found"
+- [x] 3.4 US-01 walk-through lands on the detail page with `Streak: 0 days` and `This week: 0 / 5 (minimum 2)`, and the goal is listed on `/dashboard` — ce9ec61
+- [x] 3.5 One-off fixed-days goal shows deadline and scheduled-days progress; goal without end condition shows no end-condition line — ce9ec61
+- [x] 3.6 "Next" blocks each invalid input with an inline error; "Back" preserves values — ce9ec61
+- [x] 3.7 Priority-1 goal is listed before a lower-priority goal on `/dashboard` — ce9ec61
+- [x] 3.8 `/goals/not-a-uuid` and a random valid UUID return 404 "Goal not found" — ce9ec61
 
 ### Phase 4: Cross-user isolation in the smoke test
 
 #### Automated
 
-- [ ] 4.1 Linting passes: `npm run lint`
-- [ ] 4.2 Smoke test passes against a local production preview with local Supabase
-- [ ] 4.3 CI `smoke` job passes on the pull request
+- [x] 4.1 Linting passes: `npm run lint` — 9895038
+- [x] 4.2 Smoke test passes against a local production preview with local Supabase — 9895038
+- [x] 4.3 CI `smoke` job passes on the pull request — 9895038
 
 #### Manual
 
-- [ ] 4.4 Loosening `goals_select_own` locally makes the B-side smoke steps fail; reverting restores a pass
-- [ ] 4.5 `npx supabase db push` applied to the linked hosted project before merging the PR
+- [x] 4.4 Loosening `goals_select_own` locally makes the B-side smoke steps fail; reverting restores a pass — 9895038
+- [x] 4.5 `npx supabase db push` applied to the linked hosted project before merging the PR — 9895038

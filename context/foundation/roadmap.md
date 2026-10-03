@@ -3,7 +3,7 @@ project: Habistep
 version: 1
 status: draft
 created: 2026-09-29
-updated: 2026-10-01
+updated: 2026-10-03
 prd_version: 2
 main_goal: speed
 top_blocker: time
@@ -40,7 +40,7 @@ People building habits set goals that are too ambitious, try to change everythin
 | ID   | Change ID                | Outcome (user can …)                                                              | Prerequisites | PRD refs                                      | Status   |
 | ---- | ------------------------ | --------------------------------------------------------------------------------- | ------------- | --------------------------------------------- | -------- |
 | F-01 | domain-rule-checks       | (foundation) automated checks for goal rules run locally and in CI                | —             | NFR-005, Business Logic                       | ready    |
-| S-01 | add-first-goal           | add a goal with target, minimum and a flexible or fixed-days schedule, and see it listed and on its detail page | —             | US-01, US-02, FR-001, FR-004, FR-005, FR-014, NFR-002 | planning |
+| S-01 | add-first-goal           | add a goal with target, minimum and a flexible or fixed-days schedule, and see it listed and on its detail page | —             | US-01, US-02, FR-001, FR-004, FR-005, FR-014, NFR-002 | in-progress |
 | S-02 | log-daily-completion     | mark a goal Done / Not done / Done less / Done more and see streak and XP update  | S-01, F-01    | US-04, FR-005, FR-006, FR-016, FR-017         | proposed |
 | S-03 | weekly-review-screen     | open a Weekly Review of last week's outcome, streak and XP per goal               | S-02          | US-08, FR-019, NFR-003, NFR-006               | proposed |
 | S-04 | goal-scaling-suggestion  | accept or dismiss a suggestion to lower or raise a goal in the Weekly Review      | S-03          | US-08, FR-020                                 | proposed |
@@ -105,7 +105,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Unknowns:**
   - What happens when a one-off goal's deadline passes before it is completed? (PRD v2 Open Question 1; in-progress and completed behaviour is settled in PRD Business Logic, One-off goals) — Owner: user. Block: no.
 - **Risk:** First slice to create tables, so owner-only row-level security is set up here, not deferred; replaces the placeholder post-login landing.
-- **Status:** planning
+- **Status:** in-progress
 
 ### S-02: Log a day and see streak and XP
 
@@ -115,7 +115,8 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Prerequisites:** S-01, F-01
 - **Parallel with:** S-06, S-07, S-08, S-09, S-12
 - **Blockers:** —
-- **Unknowns:** —
+- **Unknowns:**
+  - Which time zone defines "today" (the day boundary for logging) and the Monday–Sunday week end that resets a flexible streak: a single app-wide zone or one per user (IANA name stored on the user)? Same question as S-03's, but needed here first — decide once, before planning. Today's code computes "today" in UTC in one place only (the one-off deadline check, `src/lib/schemas/goal.ts`); a user in Poland logging at 00:30 local time would land on the previous UTC day. See the S-01 impl-review follow-up (F3), at `context/archive/2026-10-01-add-first-goal/follow-ups/review-fixes.md` once S-01 is archived — Owner: user. Block: yes, for `/10x-plan log-daily-completion`.
 - **Risk:** Carries both streak modes from PRD v2 Business Logic (flexible: reset only at the end of a Monday–Sunday week whose minimum was missed; fixed weekdays: break as soon as a scheduled day passes unmet); every later slice reads this slice's log data, so its rules must be right first.
 - **Status:** proposed
 
@@ -128,7 +129,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Parallel with:** S-05, S-06, S-07, S-08, S-09, S-10, S-12, S-13
 - **Blockers:** —
 - **Unknowns:**
-  - Which time zone defines the Monday–Sunday boundary (single app-wide zone vs per user)? — Owner: user. Block: no.
+  - Which time zone defines the Monday–Sunday boundary (single app-wide zone vs per user)? Same decision as S-02's day boundary — it must be made when planning S-02 (see its Unknowns), and this slice reuses it, including for the weekly Cron job, which runs in UTC. — Owner: user. Block: no.
 - **Risk:** Turns the scheduled-job stub into real work; a silent job failure would violate NFR-006, so failure must be visible, not just logged.
 - **Status:** proposed
 
