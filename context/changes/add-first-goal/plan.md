@@ -86,6 +86,7 @@ Create the `goals` table with owner-only RLS, add zod, and define the shared goa
 - Index on `(user_id, priority, created_at)` for the dashboard query.
 - `create extension if not exists moddatetime schema extensions;` and a `before update` trigger `goals_set_updated_at` executing `extensions.moddatetime(updated_at)`, so `updated_at` is correct once S-07 adds editing.
 - `alter table public.goals enable row level security;` Policies for role `authenticated` only: `goals_select_own` (USING `(select auth.uid()) = user_id`), `goals_insert_own` (WITH CHECK same), `goals_update_own` (USING + WITH CHECK same). No `anon` policies and **no delete policy** (NFR-005: goals are archived, never hard-deleted). A header comment states both omissions are intentional.
+- *Addendum (impl review F2):* the migration also resets table grants — `revoke all ... from anon, authenticated`, then `grant select, insert, update ... to authenticated` — because Supabase grants every privilege on new `public` tables by default. This is intentional least-privilege hardening on top of RLS (so even a missing policy cannot expose DELETE or anon access); S-07 needs no new grant for editing.
 
 #### 2. zod dependency
 

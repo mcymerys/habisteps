@@ -36,10 +36,13 @@ const deadlineSchema = z
   );
 
 const positiveNumber = z.number({ error: "Enter a number" }).positive("Must be greater than 0");
+// Upper bound = smallint max: freq_target / freq_minimum are smallint columns, so a larger value would
+// pass zod and fail in Postgres (500 instead of a 400 field error).
 const positiveInteger = z
   .number({ error: "Enter a whole number" })
   .int("Enter a whole number")
-  .min(1, "Must be at least 1");
+  .min(1, "Must be at least 1")
+  .max(32767, "Must be at most 32767");
 
 // Cross-field rules live inside the nested objects (timing / endCondition / schedule) and never on the
 // top-level object: zod skips a top-level refinement while any other key is still invalid, which would
@@ -86,7 +89,13 @@ const scheduleSchema = z.discriminatedUnion("mode", [
 ]);
 
 export const createGoalSchema = z.object({
-  name: z.string().trim().min(1, "Name is required").max(100, "Name can be at most 100 characters"),
+  name: z
+    .string()
+    .trim()
+    .min(1, "Name is required")
+    .max(100, "Name can be at most 100 characters")
+    // Postgres text columns reject NUL (\u0000); catch it here so it's a 400, not a 500.
+    .refine((value) => !value.includes("\0"), "Name contains an invalid character"),
   timing: timingSchema,
   endCondition: endConditionSchema,
   schedule: scheduleSchema,
