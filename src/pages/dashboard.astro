@@ -1,20 +1,65 @@
 ---
 import Layout from "@/layouts/Layout.astro";
+import { createClient } from "@/lib/supabase";
+import { listGoals } from "@/lib/services/goals";
+import { categoryLabel, priorityLabel, scheduleSummary } from "@/lib/goal-format";
 
 const { user } = Astro.locals;
+
+const supabase = createClient(Astro.request.headers, Astro.cookies);
+if (!supabase) throw new Error("Supabase is not configured");
+const goals = await listGoals(supabase);
 ---
 
 <Layout title="Dashboard">
   <div class="bg-cosmic flex min-h-screen items-center justify-center p-4">
-    <div class="rounded-2xl border border-white/10 bg-white/10 p-8 text-center text-white backdrop-blur-xl">
-      <h1 class="mb-4 bg-gradient-to-r from-blue-200 to-purple-200 bg-clip-text text-3xl font-bold text-transparent">
+    <div class="w-full max-w-2xl rounded-2xl border border-white/10 bg-white/10 p-8 text-white backdrop-blur-xl">
+      <h1 class="mb-2 bg-gradient-to-r from-blue-200 to-purple-200 bg-clip-text text-center text-3xl font-bold text-transparent">
         Dashboard
       </h1>
-      <p class="text-blue-100/80">
+      <p class="text-center text-blue-100/80">
         Welcome, <span class="font-semibold text-white">{user?.email}</span>
       </p>
-      <p class="mt-2 text-sm text-blue-100/50">This page is only for authenticated users.</p>
-      <form method="POST" action="/api/auth/signout" class="mt-6">
+
+      <div class="mt-8 flex items-center justify-between">
+        <h2 class="text-lg font-semibold">Your goals</h2>
+        {goals.length > 0 && (
+          <a href="/goals/new" class="rounded-lg bg-purple-600 px-4 py-2 text-sm font-medium hover:bg-purple-500">
+            Add goal
+          </a>
+        )}
+      </div>
+
+      {goals.length === 0 ? (
+        <div class="mt-4 rounded-lg border border-dashed border-white/20 p-6 text-center">
+          <p class="text-blue-100/70">You have no goals yet.</p>
+          <a
+            href="/goals/new"
+            class="mt-4 inline-block rounded-lg bg-purple-600 px-4 py-2 text-sm font-medium hover:bg-purple-500"
+          >
+            Add goal
+          </a>
+        </div>
+      ) : (
+        <ul class="mt-4 space-y-3">
+          {goals.map((goal) => (
+            <li>
+              <a
+                href={`/goals/${goal.id}`}
+                class="block rounded-lg border border-white/10 bg-white/5 p-4 transition-colors hover:bg-white/10"
+              >
+                <span class="font-semibold">{goal.name}</span>
+                <span class="mt-1 block text-sm text-blue-100/70">
+                  {categoryLabel(goal.category)} · {priorityLabel(goal.priority)} priority · {scheduleSummary(goal)}
+                  {goal.timing.kind === "one_off" && ` · due ${goal.timing.deadline}`}
+                </span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      )}
+
+      <form method="POST" action="/api/auth/signout" class="mt-8 text-center">
         <button
           type="submit"
           class="rounded-lg border border-white/20 bg-white/10 px-4 py-2 text-sm transition-colors hover:bg-white/20"
