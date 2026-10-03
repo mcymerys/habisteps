@@ -1,7 +1,7 @@
 ---
 change_id: add-first-goal
 title: Add a goal with target, minimum and schedule, shown on list and detail page
-status: implementing
+status: implemented
 created: 2026-10-01
 updated: 2026-10-03
 archived_at: null

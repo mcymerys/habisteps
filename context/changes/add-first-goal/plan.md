@@ -386,11 +386,11 @@ First migration in the repository; there is no existing data. Applies locally vi
 
 #### Automated
 
-- [x] 4.1 Linting passes: `npm run lint`
-- [x] 4.2 Smoke test passes against a local production preview with local Supabase
-- [ ] 4.3 CI `smoke` job passes on the pull request
+- [x] 4.1 Linting passes: `npm run lint` — 9895038
+- [x] 4.2 Smoke test passes against a local production preview with local Supabase — 9895038
+- [x] 4.3 CI `smoke` job passes on the pull request — 9895038
 
 #### Manual
 
-- [x] 4.4 Loosening `goals_select_own` locally makes the B-side smoke steps fail; reverting restores a pass
-- [x] 4.5 `npx supabase db push` applied to the linked hosted project before merging the PR
+- [x] 4.4 Loosening `goals_select_own` locally makes the B-side smoke steps fail; reverting restores a pass — 9895038
+- [x] 4.5 `npx supabase db push` applied to the linked hosted project before merging the PR — 9895038
