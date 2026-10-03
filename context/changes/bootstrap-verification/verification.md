@@ -40,9 +40,9 @@ Habistep is a solo, after-hours web-app MVP with a 6-week timeline that needs au
 
 ## Pre-scaffold verification
 
-| Signal      | Value                                                     | Severity | Notes                                                                 |
-| ----------- | ---------------------------------------------------------- | -------- | ---------------------------------------------------------------------- |
-| npm package | not run                                                   | n/a      | `cmd_template` starts with `git clone`; no npm CLI package to resolve |
+| Signal      | Value                                                     | Severity | Notes                                                                            |
+| ----------- | --------------------------------------------------------- | -------- | -------------------------------------------------------------------------------- |
+| npm package | not run                                                   | n/a      | `cmd_template` starts with `git clone`; no npm CLI package to resolve            |
 | GitHub repo | przeprogramowani/10x-astro-starter last pushed 2026-09-12 | fresh    | from card `docs_url`; `gh` CLI unavailable, fetched via GitHub REST API directly |
 
 ## Scaffold log
@@ -65,27 +65,28 @@ Clean tree. No CRITICAL, HIGH, MODERATE, or LOW findings to report.
 
 ## Hints recorded but not acted on
 
-| Hint                    | Value               |
-| ------------------------ | -------------------- |
+| Hint                    | Value                |
+| ----------------------- | -------------------- |
 | bootstrapper_confidence | first-class          |
 | quality_override        | false                |
-| path_taken               | standard             |
-| self_check_answers       | null                 |
-| team_size                | solo                 |
-| deployment_target        | cloudflare-pages     |
-| ci_provider               | github-actions       |
-| ci_default_flow          | auto-deploy-on-merge |
-| has_auth                  | true                 |
-| has_payments              | false                |
-| has_realtime              | false                |
-| has_ai                    | false                |
-| has_background_jobs       | true                 |
+| path_taken              | standard             |
+| self_check_answers      | null                 |
+| team_size               | solo                 |
+| deployment_target       | cloudflare-pages     |
+| ci_provider             | github-actions       |
+| ci_default_flow         | auto-deploy-on-merge |
+| has_auth                | true                 |
+| has_payments            | false                |
+| has_realtime            | false                |
+| has_ai                  | false                |
+| has_background_jobs     | true                 |
 
 ## Next steps
 
 Next: a future skill will set up agent context (CLAUDE.md, AGENTS.md). For now, your project is scaffolded and verified — happy hacking.
 
 Useful manual steps in the meantime:
+
 - `git init` (if you have not already) to start your own repo history.
 - Review the `CLAUDE.md.scaffold` sibling and decide which version of `CLAUDE.md` to keep (or merge the two) — the starter's own `CLAUDE.md` may carry stack-specific agent guidance worth folding in.
 - Address the noted background-job gotcha: the starter's edge runtime doesn't handle long-running tasks, so the weekly Review generator needs a Cloudflare Workers Cron Trigger rather than an in-request job.

@@ -29,6 +29,7 @@ Existing habit/fitness trackers log completion but do not help a user set a real
 **Target group**: People who want to change — motivated to build habits, ready to work within structure rather than against it.
 
 Pain dimensions this product addresses:
+
 - Lack of structure/clarity — SMART validation, goals defined with both a target and a minimum.
 - Lack of motivation/visible progress — streaks, XP, levels, badges.
 - Doing too much at once, leading to paralysis — a slot limit on simultaneously tracked habits that grows with level, with priority-based queueing beyond the limit.
@@ -127,30 +128,39 @@ Pain dimensions this product addresses:
 ### Goal management
 
 - FR-003: User can view all goals sorted by when they need to be executed (by deadline/frequency); if all today's goals are completed, show a motivational message ("That's all for today, you're on track"); a "Show more" control reveals goals for other days. Priority: must-have
+
   > Socrates: Counter-argument considered: "Show only today's goals might hide important tasks." Resolution: kept, with "Show more" toggle for other days.
 
 - FR-004: User can add a new goal through a multi-step form (Step 1: name, Step 2: deadline — only for non-recurring goals; recurring goals have no deadline, Step 3: end condition — target and minimum, Step 4: frequency — either flexible (target and minimum times per week, e.g. 5x/2x) or fixed weekdays (e.g. Mon/Wed/Fri), Step 5: category, Step 6: priority). The category step offers a fixed list: Fitness, Health, Learning, Work/Productivity, Relationships, Finance, Other. Priority: must-have
+
   > Socrates: Counter-argument considered: "Multi-step form might cause drop-off at step 2." Resolution: kept; user accepted the flow.
 
 - FR-005: User can view a goal's detail page with streak count and text-based progress. Priority: must-have
+
   > Socrates: Counter-argument considered: "Visual progress bar takes effort; text is enough." Resolution: text-based only on MVP; visual bar in v2.
 
 - FR-006: User can mark a goal as: Done (full target met), Not done (minimum not met), Done less (minimum met, target not met), Done more (target exceeded). Priority: must-have
+
   > Socrates: Counter-argument considered: "Four options are complex; binary (Done/Not done) is simpler." Resolution: kept; four options provide the nuance needed for adaptive feedback.
 
 - FR-007: App validates goal SMART criteria and warns if unrealistic: when the target frequency exceeds 7x/week (physically impossible for a once-daily habit), or when the target end-condition/frequency value is more than 3x the minimum value. Priority: must-have
+
   > Socrates: Counter-argument considered: "Extra validation UX is more work in an already expanded MVP." Resolution: kept as must-have; this is the app's core insight (helping users set realistic goals), not a cosmetic add-on.
 
 - FR-009: User can edit an existing goal, including target/minimum thresholds and priority. Priority: must-have
+
   > Socrates: Counter-argument considered: "Edit is extra work; user could delete + re-add." Resolution: kept; edit is simpler UX.
 
 - FR-010: User can archive a goal (hide from active list, data preserved). Priority: must-have
+
   > Socrates: Counter-argument considered: "Delete is simpler than archive." Resolution: archive chosen; preserves data for history/insights later.
 
 - FR-012: App shows a motivational message when all today's goals are completed. Priority: must-have
+
   > Socrates: No counter-argument; reinforces engagement.
 
 - FR-014: User can set a priority on each goal, used to order which goals are active vs. queued when the slot limit is reached. Priority: must-have
+
   > Socrates: No separate challenge; priority is a prerequisite for FR-015's queueing mechanic, confirmed alongside it.
 
 - FR-015: New user starts with 3 active goal slots; goals added beyond the slot limit are queued (locked, not tracked) in priority order until a slot frees up or the user levels up. Priority: must-have
@@ -164,15 +174,19 @@ Pain dimensions this product addresses:
 ### Gamification
 
 - FR-016: User earns a fixed amount of XP per logged option, not cumulative: "Done less" 5 XP, "Done" 10 XP, "Done more" 15 XP, "Not done" 0 XP. Priority: must-have
+
   > Socrates: Counter-argument considered: "Fixed XP regardless of goal difficulty could be trivially farmed with easy goals." Resolution: kept; farming isn't a real risk in a single-user MVP with no cross-user ranking.
 
 - FR-017: User earns a +50 XP bonus for a perfect week (the full target met every required instance of the week). Meeting the target on a single day has no separate bonus — it is already reflected in the per-option XP of FR-016. Priority: must-have
+
   > Socrates: No separate challenge; addressed together with FR-016.
 
 - FR-018: Accumulated XP unlocks levels; each level increases the number of active goal slots available. The threshold to reach level 2 (the first level-up), L2, equals the total XP a user earns by completing one perfect week for a goal (every required "Done" at full target for that week, plus the perfect-week bonus). The threshold to reach level n (n ≥ 2) is L2 × (n-1)². Priority: must-have
+
   > Socrates: Covered by the FR-015 challenge above (starting slots raised to 3; leveling still grows the limit).
 
 - FR-021: User earns a "perfect week" badge when a goal's full target is met every required instance in a week. Priority: must-have
+
   > Socrates: No separate challenge; badge criteria follow directly from FR-017's perfect-week definition.
 
 - FR-022: User earns streak-milestone badges at 7, 30, and 100 days for a given goal. Priority: must-have
@@ -181,6 +195,7 @@ Pain dimensions this product addresses:
 ### Weekly Review
 
 - FR-019: User can view a "Weekly Review" screen summarizing, for each goal, the past week's outcome (target met / minimum met / missed), current streak, and XP earned that week. Priority: must-have
+
   > Socrates: Counter-argument considered: "A dedicated screen is more scope than a home-page banner." Resolution: kept as a dedicated screen; it's the natural home for the suggestion-accept/reject flow in FR-020.
 
 - FR-020: App generates a suggestion to lower a goal's target/minimum if the week fell below minimum, or to raise it if the target was exceeded for 2 consecutive weeks; user must explicitly accept or dismiss the suggestion — nothing changes automatically. Priority: must-have
@@ -189,6 +204,7 @@ Pain dimensions this product addresses:
 ### Social
 
 - FR-023: User can invite a friend via a shareable link; the recipient can accept to establish a mutual friend relationship. Priority: must-have
+
   > Socrates: Counter-argument considered: "This is a full social feature (invite flow, visibility, moderation) competing for scope against XP/levels/Weekly Review in a 6-week solo project — it may not fit." Resolution: kept in MVP but scoped to the minimum: link-based invite/accept and read-only visibility only (no chat, no notifications, no feed).
 
 - FR-024: User can mark a goal as public or private; a public goal's progress and streak are visible, read-only, to accepted friends. Private goals are never visible to anyone else. Priority: must-have
@@ -216,8 +232,9 @@ Pain dimensions this product addresses:
 **Core rule**: The app teaches the user to set realistic goals by distinguishing a target from a minimum and validating against SMART criteria, makes progress visible through gamification (streaks sustained by the minimum, XP and bonuses for meeting the target or a perfect week, levels, badges), limits how many habits can be tracked at once (a slot count that grows with level, with priority-based queueing beyond that limit) so the user doesn't abandon everything at once, and every week evaluates actual performance and proposes — never forces — a change to a goal's difficulty; friends with visibility into public goals add a layer of social accountability.
 
 **Streak rule**: reaching the minimum (frequency and end condition) within the relevant period sustains the streak; reaching the full target earns more XP (see Completion options), and — if true for every required day of the week — a "perfect week" badge. The tracking week runs Monday–Sunday. A goal uses one of two scheduling modes:
-- *Flexible* (N times per week): the streak is not broken while the week's minimum can still be met; it resets only at the end of a week in which the minimum was not reached (e.g. for "2x/week" minimum, fewer than 2 completions by Sunday).
-- *Fixed weekdays*: the streak breaks as soon as a scheduled day passes without at least the minimum end condition.
+
+- _Flexible_ (N times per week): the streak is not broken while the week's minimum can still be met; it resets only at the end of a week in which the minimum was not reached (e.g. for "2x/week" minimum, fewer than 2 completions by Sunday).
+- _Fixed weekdays_: the streak breaks as soon as a scheduled day passes without at least the minimum end condition.
 
 **One-off goals**: a one-off goal is the only kind of goal with a deadline; it keeps the frequency step (flexible or fixed weekdays) and has a streak under the same rules while it is in progress. Once the goal is fully completed it stops counting toward the streak — the streak is frozen (it neither grows nor breaks) and the goal no longer appears in the Weekly Review.
 
@@ -231,7 +248,7 @@ Pain dimensions this product addresses:
 
 **Authentication**: Email + password (must-have). OAuth/social login (Google, GitHub, Apple) is nice-to-have (FR-002).
 
-**Authorization model**: Flat — every logged-in user has full access to their own data (goals, progress, history). A symmetric "friend" relationship, established after an invite is accepted, grants limited, read-only access to the other party's *public* goals and progress — never to private goals.
+**Authorization model**: Flat — every logged-in user has full access to their own data (goals, progress, history). A symmetric "friend" relationship, established after an invite is accepted, grants limited, read-only access to the other party's _public_ goals and progress — never to private goals.
 
 **Roles**: No administrative roles in the MVP (admin/moderator may be added in v1.1 if needed).
 
