@@ -343,28 +343,28 @@ First migration in the repository; there is no existing data. Applies locally vi
 
 #### Automated
 
-- [x] 1.1 Migration applies cleanly on a fresh local database: `npx supabase db reset`
-- [x] 1.2 Linting passes: `npm run lint`
-- [x] 1.3 Type checking passes: `npx astro check`
+- [x] 1.1 Migration applies cleanly on a fresh local database: `npx supabase db reset` — 3cbe623
+- [x] 1.2 Linting passes: `npm run lint` — 3cbe623
+- [x] 1.3 Type checking passes: `npx astro check` — 3cbe623
 
 #### Manual
 
-- [x] 1.4 In Supabase Studio, `public.goals` shows RLS enabled with exactly three policies (select/insert/update, role `authenticated`) and no delete policy
-- [x] 1.5 In the SQL editor, inserting a recurring goal with a deadline, and a flexible goal with `freq_minimum > freq_target`, are both rejected by named CHECK constraints
+- [x] 1.4 In Supabase Studio, `public.goals` shows RLS enabled with exactly three policies (select/insert/update, role `authenticated`) and no delete policy — 3cbe623
+- [x] 1.5 In the SQL editor, inserting a recurring goal with a deadline, and a flexible goal with `freq_minimum > freq_target`, are both rejected by named CHECK constraints — 3cbe623
 
 ### Phase 2: Goal service, API endpoint and routing
 
 #### Automated
 
-- [ ] 2.1 Linting passes: `npm run lint`
-- [ ] 2.2 Type checking passes: `npx astro check`
-- [ ] 2.3 Build passes: `npm run build`
+- [x] 2.1 Linting passes: `npm run lint`
+- [x] 2.2 Type checking passes: `npx astro check`
+- [x] 2.3 Build passes: `npm run build`
 
 #### Manual
 
-- [ ] 2.4 With `npm run dev`, signing in redirects to `/dashboard`
-- [ ] 2.5 Signed out, POST `/api/goals` returns 401 JSON
-- [ ] 2.6 Signed in, a valid payload returns 201 and the row has the correct `user_id`; schedule minimum > target returns 400 with a `schedule.minimum` field error
+- [x] 2.4 With `npm run dev`, signing in redirects to `/dashboard`
+- [x] 2.5 Signed out, POST `/api/goals` returns 401 JSON
+- [x] 2.6 Signed in, a valid payload returns 201 and the row has the correct `user_id`; schedule minimum > target returns 400 with a `schedule.minimum` field error
 
 ### Phase 3: Goal list, multi-step form and detail page
 
