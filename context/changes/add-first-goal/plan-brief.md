@@ -16,22 +16,23 @@ After sign-in the user lands on `/dashboard` with their goals listed (or an empt
 
 ## Key Decisions Made
 
-| Decision | Choice | Why (1 sentence) |
-| --- | --- | --- |
-| End condition | Optional numeric target + minimum + one shared unit | S-06 (3× rule) and S-04 (suggested new values) need numbers; some habits have no measurable amount. |
-| Unit | Fixed list: minutes, hours, times, pages, km, steps | Comparable values without parsing free text. |
-| Priority | Integer 1–5, **1 = highest** (default 3) | Matches the P1/P2 convention; fewer ties for S-09 queueing than three levels. |
-| Goal list location | `/dashboard`; sign-in redirects there | Reuses the existing protected route and Topbar link. |
-| One-off deadline passed (PRD OQ1) | Deferred to S-02 / S-08 | S-01 has no logging or archive to act on it; it only stores and shows the deadline. |
-| Form submission | React island, JSON `fetch` to `POST /api/goals` | Nested data and per-field server errors mapped back to the right step. |
-| Frequency limits | Logical only: `1 ≤ minimum ≤ target`, no upper cap | Leaves the "> 7x/week" warn-or-justify flow to S-06. |
-| Fixed weekdays | Day set only, no separate min/target count | PRD: a missed scheduled day breaks the streak immediately. |
-| Isolation check | Extend `scripts/smoke.mjs` with a second user | Automated in CI, zero new dependencies; F-01 owns the unit-test harness. |
-| Progress text | `This week: 0 / N …` with fixed 0 until S-02 | Final format now, so S-02 only supplies the real count. |
+| Decision                          | Choice                                              | Why (1 sentence)                                                                                    |
+| --------------------------------- | --------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| End condition                     | Optional numeric target + minimum + one shared unit | S-06 (3× rule) and S-04 (suggested new values) need numbers; some habits have no measurable amount. |
+| Unit                              | Fixed list: minutes, hours, times, pages, km, steps | Comparable values without parsing free text.                                                        |
+| Priority                          | Integer 1–5, **1 = highest** (default 3)            | Matches the P1/P2 convention; fewer ties for S-09 queueing than three levels.                       |
+| Goal list location                | `/dashboard`; sign-in redirects there               | Reuses the existing protected route and Topbar link.                                                |
+| One-off deadline passed (PRD OQ1) | Deferred to S-02 / S-08                             | S-01 has no logging or archive to act on it; it only stores and shows the deadline.                 |
+| Form submission                   | React island, JSON `fetch` to `POST /api/goals`     | Nested data and per-field server errors mapped back to the right step.                              |
+| Frequency limits                  | Logical only: `1 ≤ minimum ≤ target`, no upper cap  | Leaves the "> 7x/week" warn-or-justify flow to S-06.                                                |
+| Fixed weekdays                    | Day set only, no separate min/target count          | PRD: a missed scheduled day breaks the streak immediately.                                          |
+| Isolation check                   | Extend `scripts/smoke.mjs` with a second user       | Automated in CI, zero new dependencies; F-01 owns the unit-test harness.                            |
+| Progress text                     | `This week: 0 / N …` with fixed 0 until S-02        | Final format now, so S-02 only supplies the real count.                                             |
 
 ## Scope
 
 **In scope:**
+
 - `goals` table, enums, CHECK constraints, RLS (select/insert/update own; no delete)
 - `zod`, shared goal schema, `src/types.ts`, goal service
 - `POST /api/goals`; `/goals` route protection; sign-in → `/dashboard`
@@ -39,6 +40,7 @@ After sign-in the user lands on `/dashboard` with their goals listed (or an empt
 - Smoke test: 401/redirect, 400, owner create + read, second user 404
 
 **Out of scope:**
+
 - Logging days, real streak/XP (S-02); SMART warnings (S-06); edit / archive (S-07 / S-08)
 - Slots and queueing (S-09); public/private and friends (S-13); today-view ordering (S-05)
 - Post-deadline behaviour of one-off goals; unit-test runner (F-01); generated DB types
@@ -49,12 +51,12 @@ Layered bottom-up: SQL migration (shape invariants as CHECK constraints + RLS) �
 
 ## Phases at a Glance
 
-| Phase | What it delivers | Key risk |
-| --- | --- | --- |
-| 1. Data model, RLS and schema | `goals` table with owner-only RLS; zod schema; types | Model choices here are read by every later slice |
-| 2. Service, API and routing | `POST /api/goals`, `/goals` protection, sign-in → `/dashboard` | Returning redirects instead of 401 JSON to `fetch` |
-| 3. List, form and detail | Three screens covering US-01 | Mapping server field errors back to the right step |
-| 4. Isolation smoke test | CI proof that user B cannot see user A's goal | A test that passes even when RLS is loosened (checked manually) |
+| Phase                         | What it delivers                                               | Key risk                                                        |
+| ----------------------------- | -------------------------------------------------------------- | --------------------------------------------------------------- |
+| 1. Data model, RLS and schema | `goals` table with owner-only RLS; zod schema; types           | Model choices here are read by every later slice                |
+| 2. Service, API and routing   | `POST /api/goals`, `/goals` protection, sign-in → `/dashboard` | Returning redirects instead of 401 JSON to `fetch`              |
+| 3. List, form and detail      | Three screens covering US-01                                   | Mapping server field errors back to the right step              |
+| 4. Isolation smoke test       | CI proof that user B cannot see user A's goal                  | A test that passes even when RLS is loosened (checked manually) |
 
 **Prerequisites:** Docker running for local Supabase (`npx supabase start`); no dependency on F-01.
 **Estimated effort:** ~3–4 sessions across 4 phases.

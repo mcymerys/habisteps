@@ -51,14 +51,14 @@ Bottom-up along the standard layering for a database change: migration → share
 
 Data shape decisions (from the planning interview):
 
-| Concept | Storage |
-| --- | --- |
-| Goal type | enum `goal_kind`: `recurring`, `one_off`; `deadline date` present **iff** `one_off` |
-| End condition (optional) | `end_target_value numeric`, `end_minimum_value numeric`, `end_unit goal_unit` — all three NULL or all three set; `0 < minimum ≤ target` |
-| Unit list | enum `goal_unit`: `minutes`, `hours`, `times`, `pages`, `km`, `steps` |
-| Schedule | enum `schedule_mode`: `flexible` (requires `freq_target`, `freq_minimum` smallint with `1 ≤ minimum ≤ target`, no upper bound; `fixed_days` NULL) or `fixed_days` (requires `fixed_days smallint[]`, non-empty, ISO weekdays 1=Mon…7=Sun; freq columns NULL) |
-| Category | enum `goal_category`: `fitness`, `health`, `learning`, `work_productivity`, `relationships`, `finance`, `other` (FR-004 list) |
-| Priority | `smallint` 1–5, **1 = highest**; default 3 |
+| Concept                  | Storage                                                                                                                                                                                                                                                      |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Goal type                | enum `goal_kind`: `recurring`, `one_off`; `deadline date` present **iff** `one_off`                                                                                                                                                                          |
+| End condition (optional) | `end_target_value numeric`, `end_minimum_value numeric`, `end_unit goal_unit` — all three NULL or all three set; `0 < minimum ≤ target`                                                                                                                      |
+| Unit list                | enum `goal_unit`: `minutes`, `hours`, `times`, `pages`, `km`, `steps`                                                                                                                                                                                        |
+| Schedule                 | enum `schedule_mode`: `flexible` (requires `freq_target`, `freq_minimum` smallint with `1 ≤ minimum ≤ target`, no upper bound; `fixed_days` NULL) or `fixed_days` (requires `fixed_days smallint[]`, non-empty, ISO weekdays 1=Mon…7=Sun; freq columns NULL) |
+| Category                 | enum `goal_category`: `fitness`, `health`, `learning`, `work_productivity`, `relationships`, `finance`, `other` (FR-004 list)                                                                                                                                |
+| Priority                 | `smallint` 1–5, **1 = highest**; default 3                                                                                                                                                                                                                   |
 
 ## Critical Implementation Details
 
@@ -81,12 +81,13 @@ Create the `goals` table with owner-only RLS, add zod, and define the shared goa
 **Intent**: Create the four enums and the `public.goals` table described in the Implementation Approach table, enforce the shape invariants with CHECK constraints, and enable RLS with granular owner-only policies per the project convention and the "configure RLS early" decision.
 
 **Contract**:
+
 - Columns: `id uuid pk default gen_random_uuid()`, `user_id uuid not null default auth.uid() references auth.users(id) on delete cascade`, `name text not null` (trimmed length 1–100), `kind goal_kind not null`, `deadline date null`, the three end-condition columns, `schedule_mode schedule_mode not null`, `freq_target smallint`, `freq_minimum smallint`, `fixed_days smallint[]`, `category goal_category not null`, `priority smallint not null default 3` (1–5), `created_at timestamptz not null default now()`, `updated_at timestamptz not null default now()`.
 - Named CHECK constraints: deadline iff one-off; end condition all-or-none with `0 < minimum ≤ target`; schedule exclusivity (flexible ⇒ freq set, `1 ≤ min ≤ target`, `fixed_days` null; fixed ⇒ `cardinality(fixed_days) ≥ 1`, `fixed_days <@ '{1,2,3,4,5,6,7}'`, freq null); priority between 1 and 5.
 - Index on `(user_id, priority, created_at)` for the dashboard query.
 - `create extension if not exists moddatetime schema extensions;` and a `before update` trigger `goals_set_updated_at` executing `extensions.moddatetime(updated_at)`, so `updated_at` is correct once S-07 adds editing.
 - `alter table public.goals enable row level security;` Policies for role `authenticated` only: `goals_select_own` (USING `(select auth.uid()) = user_id`), `goals_insert_own` (WITH CHECK same), `goals_update_own` (USING + WITH CHECK same). No `anon` policies and **no delete policy** (NFR-005: goals are archived, never hard-deleted). A header comment states both omissions are intentional.
-- *Addendum (impl review F2):* the migration also resets table grants — `revoke all ... from anon, authenticated`, then `grant select, insert, update ... to authenticated` — because Supabase grants every privilege on new `public` tables by default. This is intentional least-privilege hardening on top of RLS (so even a missing policy cannot expose DELETE or anon access); S-07 needs no new grant for editing.
+- _Addendum (impl review F2):_ the migration also resets table grants — `revoke all ... from anon, authenticated`, then `grant select, insert, update ... to authenticated` — because Supabase grants every privilege on new `public` tables by default. This is intentional least-privilege hardening on top of RLS (so even a missing policy cannot expose DELETE or anon access); S-07 needs no new grant for editing.
 
 #### 2. zod dependency
 
@@ -103,6 +104,7 @@ Create the `goals` table with owner-only RLS, add zod, and define the shared goa
 **Intent**: Single definition of a valid new goal used by the API (full payload) and the form (per step), including rules the database cannot express (deadline not in the past, de-duplicated sorted weekdays, trimmed name).
 
 **Contract**:
+
 - `createGoalSchema` — object with `name`, `timing` (discriminated union on `kind`: `{ kind: "recurring" }` or `{ kind: "one_off", deadline }` with `deadline` ISO `YYYY-MM-DD` refined to `≥` today's UTC date, with "today" computed inside the refinement on every parse, never at module scope — a module-level date is frozen in a Worker isolate and stale in a long-open tab; the "deadline iff one-off" rule is structural, not a refinement), `endCondition` (`null` or `{ targetValue, minimumValue, unit }` with `0 < minimum ≤ target`), `schedule` (discriminated union on `mode`: `{ mode: "flexible", target, minimum }` integers with `1 ≤ minimum ≤ target`, or `{ mode: "fixed_days", days }` non-empty array of 1–7, normalised to unique ascending), `category`, `priority` (integer 1–5). Cross-field rules use refinements whose issue `path` points at the offending field (e.g. `["endCondition","minimumValue"]`) so errors can be mapped to a step. **Every cross-field rule lives inside a nested object (`timing`, `endCondition`, `schedule`), never on the top-level object**: zod skips a top-level refinement while any other key is still invalid (i.e. while later steps are empty) and `.pick()` throws on refined objects — verified on zod 4.6.5 during plan review.
 - `goalStepFields` — ordered list mapping each of the six steps to the top-level keys it owns (`name`; `timing`; `endCondition`; `schedule`; `category`; `priority`), used by the form to validate one step and to find the first step containing a server error.
 - Exported inferred type `CreateGoalInput`.
@@ -148,6 +150,7 @@ Add the data-access service and `POST /api/goals`, protect the new page routes, 
 **Intent**: Keep Supabase queries and row ↔ entity mapping out of pages and endpoints; all functions take the request-scoped Supabase client so RLS always applies.
 
 **Contract**:
+
 - `createGoal(supabase, userId, input: CreateGoalInput): Promise<{ id: string }>` — maps the input to columns (flattens `timing` into `kind` / `deadline`, sets `user_id` explicitly) and inserts, returning the id; throws on database error.
 - `listGoals(supabase): Promise<Goal[]>` — ordered by `priority asc, created_at asc`.
 - `getGoal(supabase, id: string): Promise<Goal | null>` — `null` when no row is visible.
@@ -226,6 +229,7 @@ Build the three user-facing screens: the list at `/dashboard`, the six-step form
 **Intent**: Collect all six steps in client state, validate the current step with the shared schema before advancing, and submit the complete goal as JSON.
 
 **Contract**:
+
 - Steps: (1) name; (2) recurring vs one-off, with a date input shown only for one-off; (3) "Measure each completion?" toggle — when on, target value, minimum value and a unit select from `GOAL_UNITS`; (4) flexible (target and minimum times per week) vs fixed weekdays (Mon–Sun checkboxes); (5) category select; (6) priority 1–5 with labels (default 3) and a read-only summary of all answers, with a "Create goal" button.
 - "Next" runs `createGoalSchema.safeParse` on the whole form state and keeps only the issues whose `path[0]` is in `goalStepFields[step]` (no `.pick()`), showing them inline; "Back" keeps entered values.
 - Submit: `fetch("/api/goals", { method: "POST", body: JSON })`. 201 → `window.location.assign("/goals/<id>")`; 400 → map `fieldErrors` to fields and jump to the first step containing an error; 401 → navigate to `/auth/signin`; network/500 → general error message, stay on the last step with values intact. The submit button is disabled while the request is pending.
@@ -282,6 +286,7 @@ Extend the existing CI smoke test so the owner-only access rule (NFR-002) and th
 **Intent**: Add goal creation and a second account to prove that RLS hides one user's goal from another through the real HTTP path, without adding dependencies.
 
 **Contract**:
+
 - `request()` gains a `json` body option (sends `Content-Type: application/json`) and returns `{ status, location, body }` (response text); expectations gain optional `bodyIncludes` / `bodyExcludes` checks and steps may capture values (the created goal id) for later steps.
 - Updated existing step: "signin accepts correct password" expects `location` `/dashboard`.
 - New steps, in order: anonymous `POST /api/goals` → 401; anonymous `GET /goals/new` → 302 `/auth/signin`; user A (after sign-in) posts a payload with schedule minimum > target → 400; user A posts a valid goal named `Smoke goal <timestamp>` → 201 and the id is captured; A `GET /goals/<id>` → 200 and the body includes the name; A `GET /dashboard` → body includes the name; A signs out; user B signs up and signs in; B `GET /goals/<id>` → 404; B `GET /dashboard` → 200 and the body excludes the name; B signs out.

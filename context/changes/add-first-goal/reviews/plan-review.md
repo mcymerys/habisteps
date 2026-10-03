@@ -1,4 +1,5 @@
 <!-- PLAN-REVIEW-REPORT -->
+
 # Plan Review: Add a goal with target, minimum and schedule
 
 - **Plan**: context/changes/add-first-goal/plan.md
@@ -9,15 +10,16 @@
 
 ## Verdicts
 
-| Dimension | Verdict |
-|-----------|---------|
-| End-State Alignment | FAIL |
-| Lean Execution | PASS |
-| Architectural Fitness | PASS |
-| Blind Spots | WARNING |
-| Plan Completeness | WARNING |
+| Dimension             | Verdict |
+| --------------------- | ------- |
+| End-State Alignment   | FAIL    |
+| Lean Execution        | PASS    |
+| Architectural Fitness | PASS    |
+| Blind Spots           | WARNING |
+| Plan Completeness     | WARNING |
 
 ## Grounding
+
 7/7 paths ✓, 4/4 symbols ✓ (signin redirect is `signin.ts:20`, not `:22` — trivial), brief↔plan ✓, Progress↔Phase ✓
 
 ## Findings

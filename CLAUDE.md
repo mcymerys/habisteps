@@ -63,6 +63,7 @@ GitHub Actions workflow (`.github/workflows/ci.yml`) runs three jobs:
 - **deploy** (push to master only, after `ci` and `smoke` pass) — builds and deploys the Worker via `cloudflare/wrangler-action`. Requires `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` repository secrets. Skipped on pull requests; `concurrency: production` prevents overlapping deploys.
 
 <!-- BEGIN @przeprogramowani/10x-cli -->
+
 ## Zestaw narzędzi AI 10xDevs — Moduł 2, Lekcja 3
 
 Przejrzyj kod wygenerowany przez AI przed scaleniem, korzystając z **łańcucha przeglądu implementacji**:
@@ -75,12 +76,12 @@ Przejrzyj kod wygenerowany przez AI przed scaleniem, korzystając z **łańcucha
 
 ### Router zadań — od czego zacząć
 
-| Umiejętność | Użyj jej, gdy |
-| --- | --- |
-| **Przegląd kodu (główny temat lekcji)** | |
-| `/10x-impl-review <change-id>` | Zaimplementowano kod i chcesz przeprowadzić ustrukturyzowany przegląd przed scaleniem. Umiejętność sprawdza zgodność z planem, dyscyplinę zakresu, bezpieczeństwo i jakość, architekturę, spójność wzorców oraz kryteria sukcesu, a następnie przedstawia ustalenia do selekcji. |
-| **Wynik powtarzającej się lekcji** | |
-| `/10x-lesson` | Ustalenie ujawnia powtarzającą się regułę projektu lub wzorzec błędów agenta. Zapisz je w `context/foundation/lessons.md` zamiast traktować je jako jednorazową notatkę. |
+| Umiejętność                             | Użyj jej, gdy                                                                                                                                                                                                                                                                    |
+| --------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Przegląd kodu (główny temat lekcji)** |                                                                                                                                                                                                                                                                                  |
+| `/10x-impl-review <change-id>`          | Zaimplementowano kod i chcesz przeprowadzić ustrukturyzowany przegląd przed scaleniem. Umiejętność sprawdza zgodność z planem, dyscyplinę zakresu, bezpieczeństwo i jakość, architekturę, spójność wzorców oraz kryteria sukcesu, a następnie przedstawia ustalenia do selekcji. |
+| **Wynik powtarzającej się lekcji**      |                                                                                                                                                                                                                                                                                  |
+| `/10x-lesson`                           | Ustalenie ujawnia powtarzającą się regułę projektu lub wzorzec błędów agenta. Zapisz je w `context/foundation/lessons.md` zamiast traktować je jako jednorazową notatkę.                                                                                                         |
 
 ### Dyscyplina selekcji
 
