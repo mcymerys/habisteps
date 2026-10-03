@@ -370,27 +370,27 @@ First migration in the repository; there is no existing data. Applies locally vi
 
 #### Automated
 
-- [x] 3.1 Linting passes: `npm run lint`
-- [x] 3.2 Type checking passes: `npx astro check`
-- [x] 3.3 Build passes: `npm run build`
+- [x] 3.1 Linting passes: `npm run lint` — ce9ec61
+- [x] 3.2 Type checking passes: `npx astro check` — ce9ec61
+- [x] 3.3 Build passes: `npm run build` — ce9ec61
 
 #### Manual
 
-- [x] 3.4 US-01 walk-through lands on the detail page with `Streak: 0 days` and `This week: 0 / 5 (minimum 2)`, and the goal is listed on `/dashboard`
-- [x] 3.5 One-off fixed-days goal shows deadline and scheduled-days progress; goal without end condition shows no end-condition line
-- [x] 3.6 "Next" blocks each invalid input with an inline error; "Back" preserves values
-- [x] 3.7 Priority-1 goal is listed before a lower-priority goal on `/dashboard`
-- [x] 3.8 `/goals/not-a-uuid` and a random valid UUID return 404 "Goal not found"
+- [x] 3.4 US-01 walk-through lands on the detail page with `Streak: 0 days` and `This week: 0 / 5 (minimum 2)`, and the goal is listed on `/dashboard` — ce9ec61
+- [x] 3.5 One-off fixed-days goal shows deadline and scheduled-days progress; goal without end condition shows no end-condition line — ce9ec61
+- [x] 3.6 "Next" blocks each invalid input with an inline error; "Back" preserves values — ce9ec61
+- [x] 3.7 Priority-1 goal is listed before a lower-priority goal on `/dashboard` — ce9ec61
+- [x] 3.8 `/goals/not-a-uuid` and a random valid UUID return 404 "Goal not found" — ce9ec61
 
 ### Phase 4: Cross-user isolation in the smoke test
 
 #### Automated
 
-- [ ] 4.1 Linting passes: `npm run lint`
-- [ ] 4.2 Smoke test passes against a local production preview with local Supabase
+- [x] 4.1 Linting passes: `npm run lint`
+- [x] 4.2 Smoke test passes against a local production preview with local Supabase
 - [ ] 4.3 CI `smoke` job passes on the pull request
 
 #### Manual
 
-- [ ] 4.4 Loosening `goals_select_own` locally makes the B-side smoke steps fail; reverting restores a pass
-- [ ] 4.5 `npx supabase db push` applied to the linked hosted project before merging the PR
+- [x] 4.4 Loosening `goals_select_own` locally makes the B-side smoke steps fail; reverting restores a pass
+- [x] 4.5 `npx supabase db push` applied to the linked hosted project before merging the PR
