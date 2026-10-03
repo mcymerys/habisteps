@@ -343,14 +343,14 @@ First migration in the repository; there is no existing data. Applies locally vi
 
 #### Automated
 
-- [ ] 1.1 Migration applies cleanly on a fresh local database: `npx supabase db reset`
-- [ ] 1.2 Linting passes: `npm run lint`
-- [ ] 1.3 Type checking passes: `npx astro check`
+- [x] 1.1 Migration applies cleanly on a fresh local database: `npx supabase db reset`
+- [x] 1.2 Linting passes: `npm run lint`
+- [x] 1.3 Type checking passes: `npx astro check`
 
 #### Manual
 
-- [ ] 1.4 In Supabase Studio, `public.goals` shows RLS enabled with exactly three policies (select/insert/update, role `authenticated`) and no delete policy
-- [ ] 1.5 In the SQL editor, inserting a recurring goal with a deadline, and a flexible goal with `freq_minimum > freq_target`, are both rejected by named CHECK constraints
+- [x] 1.4 In Supabase Studio, `public.goals` shows RLS enabled with exactly three policies (select/insert/update, role `authenticated`) and no delete policy
+- [x] 1.5 In the SQL editor, inserting a recurring goal with a deadline, and a flexible goal with `freq_minimum > freq_target`, are both rejected by named CHECK constraints
 
 ### Phase 2: Goal service, API endpoint and routing
 
