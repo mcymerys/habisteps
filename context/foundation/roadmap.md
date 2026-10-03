@@ -3,7 +3,7 @@ project: Habistep
 version: 1
 status: draft
 created: 2026-09-29
-updated: 2026-10-02
+updated: 2026-10-03
 prd_version: 2
 main_goal: speed
 top_blocker: time
@@ -115,7 +115,8 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Prerequisites:** S-01, F-01
 - **Parallel with:** S-06, S-07, S-08, S-09, S-12
 - **Blockers:** —
-- **Unknowns:** —
+- **Unknowns:**
+  - Which time zone defines "today" (the day boundary for logging) and the Monday–Sunday week end that resets a flexible streak: a single app-wide zone or one per user (IANA name stored on the user)? Same question as S-03's, but needed here first — decide once, before planning. Today's code computes "today" in UTC in one place only (the one-off deadline check, `src/lib/schemas/goal.ts`); a user in Poland logging at 00:30 local time would land on the previous UTC day. See the S-01 impl-review follow-up (F3), at `context/archive/2026-10-01-add-first-goal/follow-ups/review-fixes.md` once S-01 is archived — Owner: user. Block: yes, for `/10x-plan log-daily-completion`.
 - **Risk:** Carries both streak modes from PRD v2 Business Logic (flexible: reset only at the end of a Monday–Sunday week whose minimum was missed; fixed weekdays: break as soon as a scheduled day passes unmet); every later slice reads this slice's log data, so its rules must be right first.
 - **Status:** proposed
 
@@ -128,7 +129,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Parallel with:** S-05, S-06, S-07, S-08, S-09, S-10, S-12, S-13
 - **Blockers:** —
 - **Unknowns:**
-  - Which time zone defines the Monday–Sunday boundary (single app-wide zone vs per user)? — Owner: user. Block: no.
+  - Which time zone defines the Monday–Sunday boundary (single app-wide zone vs per user)? Same decision as S-02's day boundary — it must be made when planning S-02 (see its Unknowns), and this slice reuses it, including for the weekly Cron job, which runs in UTC. — Owner: user. Block: no.
 - **Risk:** Turns the scheduled-job stub into real work; a silent job failure would violate NFR-006, so failure must be visible, not just logged.
 - **Status:** proposed
 
